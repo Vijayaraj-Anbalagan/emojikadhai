@@ -6,12 +6,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Slider } from '@/components/ui/slider';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Sparkles, Plus, Minus } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import confetti from "canvas-confetti";
+import BlurIn from './ui/blur-in';
 
 export function EmoKadhai1() {
   const [emojis, setEmojis] = useState('');
@@ -233,16 +233,18 @@ export function EmoKadhai1() {
 
       {/* Story Response */}
       <Card className="bg-gray-800 border-gray-700 shadow-lg rounded-lg mt-12">
-        <CardHeader>
-          <CardTitle className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-500">
-            Your Story
-          </CardTitle>
-        </CardHeader>
+        
         <CardContent className="max-h-96 overflow-y-auto p-4">
+        <h5 className="text-lg font-semibold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-violet-700">
+  Your Magical Story
+</h5>
+
           {story ? (
-            <ReactMarkdown className="prose prose-invert text-white">
-              {story}
-            </ReactMarkdown>
+            <BlurIn
+            word={story}
+             className="prose prose-invert text-white text-sm"
+             />
+        
           ) : (
             <p className="text-gray-500 italic">Your magical story will appear here, bringing emojis to life in ways you never imagined...</p>
           )}
