@@ -10,6 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Sparkles, Plus, Minus } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import confetti from "canvas-confetti";
 
 export function EmoKadhai1() {
   const [emojis, setEmojis] = useState('');
@@ -44,6 +46,35 @@ export function EmoKadhai1() {
 
   // Function to call the API and generate the story
   const handleGenerateStory = async () => {
+
+    // Show confetti animation
+    const end = Date.now() + 2.5 * 1000; // 3 seconds
+    const colors = ["#a786ff", "#fd8bbc", "#eca184", "#f8deb1"];
+ 
+    const frame = () => {
+      if (Date.now() > end) return;
+ 
+      confetti({
+        particleCount: 1,
+        angle: 60,
+        spread: 40,
+        startVelocity: 50,
+        origin: { x: 0, y: 0.5 },
+        colors: colors,
+      });
+      confetti({
+        particleCount: 2,
+        angle: 120,
+        spread: 65,
+        startVelocity: 60,
+        origin: { x: 1, y: 0.5 },
+        colors: colors,
+      });
+ 
+      requestAnimationFrame(frame);
+    };
+ 
+    frame();
     setIsLoading(true);
     try {
       const response = await fetch('/api/generateStory', {
@@ -83,18 +114,26 @@ export function EmoKadhai1() {
         Emo Kadhai
       </h1>
       <p className="text-center mb-12 text-gray-400">Create unique stories from emojis</p>
-      
+
       <div className="max-w-2xl mx-auto space-y-8">
         {/* Emoji Input */}
-        <div className="space-y-2">
-          <Label htmlFor="emojis" className="text-lg font-semibold">Enter Emojis</Label>
-          <Input
-            id="emojis"
-            value={emojis}
-            onChange={(e) => setEmojis(e.target.value)}
-            placeholder="Type emojis here..."
-            className="text-2xl p-6 bg-gray-800 border-gray-700 text-white placeholder-gray-500 focus:ring-purple-500 focus:border-purple-500"
-          />
+        <div className="space-y-4">
+          <Label htmlFor="emojis" className="text-lg font-semibold mr-4">Enter Emojis</Label>
+          <TooltipProvider>
+            <Tooltip>
+            <TooltipTrigger>
+            <Input
+              id="emojis"
+              value={emojis}
+              onChange={(e) => setEmojis(e.target.value)}
+              placeholder="Type emojis here..."
+              className="text-2xl p-6 bg-gray-800 border-gray-700 text-white placeholder-gray-500 focus:ring-purple-500 focus:border-purple-500 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+            />
+            </TooltipTrigger>
+            <TooltipContent>Enter emojis here </TooltipContent>
+            </Tooltip>
+            </TooltipProvider>
+          
         </div>
 
         {/* Genre Checkboxes */}
@@ -107,7 +146,7 @@ export function EmoKadhai1() {
                   id={genre}
                   checked={genres.includes(genre)}
                   onCheckedChange={() => handleGenreChange(genre)}
-                  className="border-gray-600"
+                  className="border-gray-600 rounded-lg"
                 />
                 <label htmlFor={genre} className="ml-2 text-sm">{genre}</label>
               </div>
@@ -125,8 +164,9 @@ export function EmoKadhai1() {
                 variant="outline"
                 size="icon"
                 disabled={characters.length <= 1}
+                className="rounded-full bg-transparent border-gray-700 hover:bg-purple-500 hover:text-white"
               >
-                <Minus className="h-4 w-4" />
+                <Minus className="h-4 w-4 fill-black" />
               </Button>
               <span>{characters.length}</span>
               <Button
@@ -134,8 +174,9 @@ export function EmoKadhai1() {
                 variant="outline"
                 size="icon"
                 disabled={characters.length >= 5}
+                className="rounded-full bg-transparent border-gray-700 hover:bg-purple-500 hover:text-white"
               >
-                <Plus className="h-4 w-4" />
+                <Plus className="h-4 w-4 fill-black" />
               </Button>
             </div>
           </div>
@@ -146,20 +187,20 @@ export function EmoKadhai1() {
                 placeholder="Character Name"
                 value={char.name}
                 onChange={(e) => handleCharacterChange(index, 'name', e.target.value)}
-                className="bg-gray-800 border-gray-700 text-white placeholder-gray-500"
+                className="bg-gray-800 border-gray-700 text-white placeholder-gray-500 rounded-lg shadow-sm"
               />
               <Textarea
                 placeholder="Character Description"
                 value={char.description}
                 onChange={(e) => handleCharacterChange(index, 'description', e.target.value)}
-                className="bg-gray-800 border-gray-700 text-white placeholder-gray-500 h-24"
+                className="bg-gray-800 border-gray-700 text-white placeholder-gray-500 h-24 rounded-lg shadow-sm"
               />
             </div>
           ))}
         </div>
 
         {/* Story Length Slider */}
-        <div>
+        <div className="space-y-2">
           <Label className="text-lg font-semibold block mb-2">
             Story Length: {storyLength} words
             <span className="ml-2 text-sm font-normal text-gray-400">
@@ -177,37 +218,37 @@ export function EmoKadhai1() {
         </div>
 
         {/* Generate Story Button */}
-        <Button
-          onClick={handleGenerateStory}
-          className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-lg py-6"
-          disabled={isLoading}
-        >
-          {isLoading ? 'Generating...' : (
-            <>
-              Generate Story
-              <Sparkles className="ml-2 h-5 w-5" />
-            </>
-          )}
-        </Button>
-
-        {/* Story Response */}
-        <Card className="bg-gray-800 border-gray-700 shadow-lg">
-          <CardHeader>
-            <CardTitle className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-500">
-              Your Story
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="max-h-96 overflow-y-auto">
-            {story ? (
-              <ReactMarkdown className="prose prose-invert text-white">
-                {story}
-              </ReactMarkdown>
-            ) : (
-              <p className="text-gray-500 italic">Your magical story will appear here, bringing emojis to life in ways you never imagined...</p>
+          <Button
+            onClick={handleGenerateStory}
+            className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-lg py-6 rounded-lg shadow-lg"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Generating...' : (
+              <>
+                Generate Story
+                <Sparkles className="ml-2 h-5 w-5" />
+              </>
             )}
-          </CardContent>
-        </Card>
-      </div>
+          </Button>
+
+      {/* Story Response */}
+      <Card className="bg-gray-800 border-gray-700 shadow-lg rounded-lg mt-12">
+        <CardHeader>
+          <CardTitle className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-500">
+            Your Story
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="max-h-96 overflow-y-auto p-4">
+          {story ? (
+            <ReactMarkdown className="prose prose-invert text-white">
+              {story}
+            </ReactMarkdown>
+          ) : (
+            <p className="text-gray-500 italic">Your magical story will appear here, bringing emojis to life in ways you never imagined...</p>
+          )}
+        </CardContent>
+      </Card>
+    </div>
 
       {/* Footer */}
       <footer className="mt-12 text-center text-sm text-gray-500">
