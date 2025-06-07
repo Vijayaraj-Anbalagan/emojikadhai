@@ -14,7 +14,7 @@ type StoryRequest = {
   export async function POST(request: NextRequest) {
     // Parse incoming request data
     const data: StoryRequest = await request.json();
-    const apiKey = 'AIzaSyBF6YqAOdiMNXKBz5tlcEAfmA7pfaN_KHc';
+    const apiKey = 'AIzaSyABlXTbh49nBJjBxsLfTG8RVa6-zpy8UA0';
     const genAI = new GoogleGenerativeAI(apiKey);
 
   // Set up the generative model
